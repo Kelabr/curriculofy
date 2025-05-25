@@ -1,0 +1,6 @@
+[project]
+name = "curriculofy"
+version = "0.1.0"
+
+[tool.taskipy.tasks]
+run = "uvicorn src.main:app --reload"
