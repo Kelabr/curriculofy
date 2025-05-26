@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from .schemas import Users, Login
 from .db.connection import connection
 from .db.querys import create,filter,login
-import json
+from .security import create_access_token
+
 
 router = APIRouter()
 coon = connection()
@@ -36,6 +37,8 @@ def login_user(data:Login):
 
     print(response['menssage'])
 
+    token = create_access_token(response)
+
 
     if response['menssage'] == 'Senha incorreta' or response['menssage'] == 'Nenhum usuário encontrado':
         return JSONResponse(
@@ -44,7 +47,7 @@ def login_user(data:Login):
         )
     
 
-    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado'})
+    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}'})
          
     
    
