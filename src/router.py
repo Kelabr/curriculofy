@@ -1,9 +1,9 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Request, HTTPException
 from fastapi.responses import JSONResponse
 from .schemas import Users, Login
 from .db.connection import connection
 from .db.querys import create,filter,login
-from .security import create_access_token
+from .security import create_access_token, verify_access_token
 
 
 router = APIRouter()
@@ -29,7 +29,25 @@ def create_user(user:Users):
 
 #Filtra usuários pela profissão
 @router.get('/user/occupation/{query}')
-def filter_user_occupation(query:str):
+def filter_user_occupation(query:str, request:Request):
+
+    auth_header = request.headers.get('Authorization')
+
+    if not auth_header or not auth_header.startswith('Bearer '):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Cabeçalho Authorization ausente ou mal formatado"
+         )
+
+    token = auth_header.split(" ")[1]
+
+    payload = verify_access_token(token)
+    if not payload:
+        raise HTTPException(
+             status_code=status.HTTP_401_UNAUTHORIZED,
+             detail="Token invalido ou expirado"
+        )
+
     query_format = query.upper()
 
     return filter(coon, query_format)
@@ -41,7 +59,7 @@ def login_user(data:Login):
 
     print(response['menssage'])
 
-    token, minuted_valided = create_access_token(response)
+    token = create_access_token(response)
 
 
     if response['menssage'] == 'Senha incorreta' or response['menssage'] == 'Nenhum usuário encontrado':
@@ -51,10 +69,7 @@ def login_user(data:Login):
         )
     
 
-    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}', 'minuted_valid':f'{minuted_valided}m'})
+    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}'})
          
-    
-   
-    
- 
-     
+
+
