@@ -20,7 +20,11 @@ def create_user(user:Users):
             content={"menssage": f"Erro ao cadastrar usuário"}
         )
 
-        return JSONResponse(content={"menssage": f"Usuário {user.name} criado"})
+        data = {'name':user.name}
+
+        token = create_access_token(data)
+
+        return JSONResponse(content={"menssage": f"Usuário {user.name} criado", 'token':f'{token}'})
 
 
 #Filtra usuários pela profissão
@@ -37,7 +41,7 @@ def login_user(data:Login):
 
     print(response['menssage'])
 
-    token = create_access_token(response)
+    token, minuted_valided = create_access_token(response)
 
 
     if response['menssage'] == 'Senha incorreta' or response['menssage'] == 'Nenhum usuário encontrado':
@@ -47,7 +51,7 @@ def login_user(data:Login):
         )
     
 
-    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}'})
+    return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}', 'minuted_valid':f'{minuted_valided}m'})
          
     
    
