@@ -7,6 +7,11 @@ class Users(BaseModel):
     password:str
     occupation:str
 
+class Admin(BaseModel):
+    name:str
+    email:str
+    password:str
+
 class Login(BaseModel):
     email:str
     password:str

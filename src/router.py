@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, Request, HTTPException
 from fastapi.responses import JSONResponse
-from .schemas import Users, Login
+from .schemas import Users, Login, Admin
 from .db.connection import connection
-from .db.querys import create,filter,login
+from .db.querys import create,filter,login, create_admin
 from .security import create_access_token, verify_access_token
 
 
@@ -20,11 +20,29 @@ def create_user(user:Users):
             content={"menssage": f"Erro ao cadastrar usuário"}
         )
 
-        data = {'name':user.name}
+        data = {'name':user.name, 'email':user.email}
 
         token = create_access_token(data)
 
         return JSONResponse(content={"menssage": f"Usuário {user.name} criado", 'token':f'{token}'})
+
+
+@router.post('/user/admin')
+def create_user(admin:Admin):
+     response = create_admin(coon, admin.name, admin.email, admin.password)
+
+     if response:
+          return JSONResponse(
+               status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+               content={'menssage':f'Erro ao cadastrar admin'}
+          )
+     data = {'name': admin.name, "category":"admin"}
+
+     token = create_access_token(data)
+
+     return JSONResponse(content={'Menssage': f"Usuário admin {admin.name}", 'token': f'{token}'})
+    
+     
 
 
 #Filtra usuários pela profissão

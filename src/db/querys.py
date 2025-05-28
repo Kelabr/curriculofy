@@ -18,6 +18,20 @@ def create(coon, name, email, phone, password, occupation):
         return JSONResponse(status_code=500, content={"menssage": f"Erro ao cadastrar usuário - {str(e)}"})
     
 
+def create_admin(coon, name, email, password):
+    password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    try:
+        with coon.cursor() as cur:
+            cur.execute('INSERT INTO admins (name, email, password) VALUES (%s, %s, %s)', (name, email, password_hash))
+        coon.commit()
+    
+    except Exception as e:
+        print(f'Erro: `{e}')
+        coon.rollback()
+        return {'menssage': f'{e}'}
+    
+
 def filter(coon, path):
         with coon.cursor() as cur:
             cur.execute('SELECT * FROM users WHERE occupation=%s', (path,))
