@@ -25,23 +25,6 @@ def create_user(user:Users):
         token = create_access_token(data)
 
         return JSONResponse(content={"menssage": f"Usuário {user.name} criado", 'token':f'{token}'})
-
-
-@router.post('/user/admin')
-def create_user(admin:Admin):
-     response = create_admin(coon, admin.name, admin.email, admin.password)
-
-     if response:
-          return JSONResponse(
-               status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-               content={'menssage':f'Erro ao cadastrar admin'}
-          )
-     data = {'name': admin.name, "category":"admin"}
-
-     token = create_access_token(data)
-
-     return JSONResponse(content={'Menssage': f"Usuário admin {admin.name}", 'token': f'{token}'})
-    
      
 
 
@@ -65,6 +48,12 @@ def filter_user_occupation(query:str, request:Request):
              status_code=status.HTTP_401_UNAUTHORIZED,
              detail="Token invalido ou expirado"
         )
+    
+    if payload.get('role') != 'admin':
+         raise HTTPException(
+              status_code=status.HTTP_403_FORBIDDEN,
+              detail="Acesso permitido apenas para administradores"
+         )
 
     query_format = query.upper()
 
@@ -77,14 +66,14 @@ def login_user(data:Login):
 
     print(response['menssage'])
 
-    token = create_access_token(response)
-
 
     if response['menssage'] == 'Senha incorreta' or response['menssage'] == 'Nenhum usuário encontrado':
         return JSONResponse(
              status_code=status.HTTP_404_NOT_FOUND,
              content={'menssage': 'Erro ao tentar logar'}
         )
+    
+    token = create_access_token(response)
     
 
     return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}'})

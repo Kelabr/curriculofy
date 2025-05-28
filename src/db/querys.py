@@ -69,9 +69,15 @@ def login(coon, email, password):
 
         if not password_hash:
             return {'menssage': 'Senha incorreta'}
+        
+        if user[6] == 'admin':
+             return {'menssage': f'{user[1]}', 'role':'admin'}
+        else:
+            return {'menssage': f'{user[1]}'}
+
 
         
-        return {'menssage': f'{user[1]}'}
+
         
         
         
