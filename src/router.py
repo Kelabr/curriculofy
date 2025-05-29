@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Request, HTTPException
 from fastapi.responses import JSONResponse
 from .schemas import Users, Login, Admin
 from .db.connection import connection
-from .db.querys import create,filter,login, create_admin
+from .db.querys import create,filter,login, verify
 from .security import create_access_token, verify_access_token
 
 
@@ -49,11 +49,23 @@ def filter_user_occupation(query:str, request:Request):
              detail="Token invalido ou expirado"
         )
     
-    if payload.get('role') != 'admin':
-         raise HTTPException(
+    # Jeito errado de dar acesso admin
+    # if payload.get('role') != 'admin':
+    #      raise HTTPException(
+    #           status_code=status.HTTP_403_FORBIDDEN,
+    #           detail="Acesso permitido apenas para administradores"
+    #      )
+
+    email_payload = payload.get('email')
+
+    user_if_admin = verify(coon, email_payload)
+
+    if user_if_admin != None:
+         return JSONResponse(
               status_code=status.HTTP_403_FORBIDDEN,
-              detail="Acesso permitido apenas para administradores"
+              content={'menssage': 'O usuário não é admin'}
          )
+    
 
     query_format = query.upper()
 

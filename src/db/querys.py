@@ -71,9 +71,24 @@ def login(coon, email, password):
             return {'menssage': 'Senha incorreta'}
         
         if user[6] == 'admin':
-             return {'menssage': f'{user[1]}', 'role':'admin'}
+             return {'menssage': f'{user[1]}', 'email':f'{user[2]}'}
         else:
             return {'menssage': f'{user[1]}'}
+
+def verify(coon, email):
+    with coon.cursor() as cur:
+        cur.execute('SELECT * FROM users WHERE email=%s', (email,))
+        user = cur.fetchone()
+
+        if user is None:
+            return {'menssage':'Usuário não encontrado'}
+            
+
+        if user[6] != 'admin':
+            return {'menssage':'Só usuários admin podem utilizar esse recurso'}
+        else:
+            return None
+        
 
 
         
