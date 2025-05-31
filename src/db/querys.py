@@ -1,6 +1,7 @@
 from fastapi import status
 from fastapi.responses import JSONResponse
 import bcrypt
+from psycopg2.extras import RealDictCursor
 
 
 def create(coon, name, email, phone, password, occupation):
@@ -73,7 +74,7 @@ def login(coon, email, password):
         if user[6] == 'admin':
              return {'menssage': f'{user[1]}', 'email':f'{user[2]}'}
         else:
-            return {'menssage': f'{user[1]}'}
+            return {'menssage': f'{user[1]}', 'email': f'{user[2]}'}
 
 def verify(coon, email):
     with coon.cursor() as cur:
@@ -89,7 +90,22 @@ def verify(coon, email):
         else:
             return None
         
+def oneUser(coon, email):
+    with coon.cursor() as cur:
+        cur.execute('SELECT * FROM users WHERE email=%s', (email,))
+        row = cur.fetchone()
 
+        if row is None:
+            return None
+        
+        colnames =[desc[0] for desc in cur.description]
+
+        user = dict(zip(colnames, row))
+
+        print(user)
+
+
+        return user
 
         
 

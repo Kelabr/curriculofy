@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Request, HTTPException
 from fastapi.responses import JSONResponse
 from .schemas import Users, Login, Admin
 from .db.connection import connection
-from .db.querys import create,filter,login, verify
+from .db.querys import create,filter,login, verify, oneUser
 from .security import create_access_token, verify_access_token
 
 
@@ -61,11 +61,11 @@ def filter_user_occupation(query:str, request:Request):
     user_if_admin = verify(coon, email_payload)
 
     if user_if_admin != None:
+         user = oneUser(coon, email_payload)
          return JSONResponse(
-              status_code=status.HTTP_403_FORBIDDEN,
-              content={'menssage': 'O usuário não é admin'}
+              status_code=status.HTTP_200_OK,
+              content={'data': f'{user}'}
          )
-    
 
     query_format = query.upper()
 
