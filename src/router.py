@@ -89,6 +89,3 @@ def login_user(data:Login):
     
 
     return JSONResponse(status_code= status.HTTP_200_OK, content={'menssage': f'Usuário {response['menssage']} logado', 'token':f'{token}'})
-         
-
-
