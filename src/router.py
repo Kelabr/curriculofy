@@ -61,12 +61,12 @@ def filter_user_occupation(query:str, request:Request):
     user_if_admin = verify(coon, email_payload)
 
     if user_if_admin != None:
-         user = oneUser(coon, email_payload)
-         return JSONResponse(
-              status_code=status.HTTP_200_OK,
-              content={'data': f'{user}'}
-         )
-
+        #  user = 
+        return oneUser(coon, email_payload)
+        #  return JSONResponse(
+        #       status_code=status.HTTP_200_OK,
+        #       content={'data': f'{user}'}
+        #  )
     query_format = query.upper()
 
     return filter(coon, query_format)

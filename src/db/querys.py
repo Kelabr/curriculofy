@@ -105,7 +105,7 @@ def oneUser(coon, email):
         print(user)
 
 
-        return user
+        return JSONResponse(content={'menssage': user}) 
 
         
 
